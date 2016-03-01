@@ -1,3 +1,10 @@
+package Hex;
+
+import boardgame.GameBoard;
+import boardgame.Piece;
+import boardgame.Player;
+import boardgame.Tile;
+
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -5,30 +12,29 @@ import java.util.stream.Collectors;
 /**
  * Created by evan on 2/12/16.
  *
- * HexBoard encapsulates the logic of a Hex game board, the console IO, and
+ * Hex.HexBoard encapsulates the logic of a Hex game board, the console IO, and
  * the algorithms to determine a winner.
  */
-public class HexBoard {
-
-    private int size = 11;
+public class HexBoard extends GameBoard {
 
     Tile board[][];
 
     Player leftToRightPlayer;
     Player topToBottomPlayer;
 
-    public HexBoard(List<Player> players) {
+    public HexBoard(List<Player> players, int boardSize) {
+        super(boardSize);
         if(players.size() < 2)
             throw new IllegalArgumentException("Not enough players for board initialization.");
 
         leftToRightPlayer = players.get(0);
         topToBottomPlayer = players.get(1);
 
-        board = new Tile[size][size];
+        board = new Tile[this.boardSize][this.boardSize];
 
-        for(int i = 0; i < size; ++i) {
-            for(int j = 0; j < size; ++j) {
-                board[i][j] = new Tile(i, j);
+        for(int i = 0; i < this.boardSize; ++i) {
+            for(int j = 0; j < this.boardSize; ++j) {
+                board[i][j] = new Tile(new HexPosition(i, j));
             }
         }
     }
@@ -37,12 +43,12 @@ public class HexBoard {
      * This function is ugly.
      */
     public void printBoard() {
-        System.out.print(String.format("%1$" + (size+2) + "s ", " "));
-        for(int i = 0; i < size; ++i) {
+        System.out.print(String.format("%1$" + (boardSize +2) + "s ", " "));
+        for(int i = 0; i < boardSize; ++i) {
             System.out.print(topToBottomPlayer.getPiece().toString() + " ");
         }
         System.out.println();
-        for(int i = size - 1; i >= 0; i--) {
+        for(int i = boardSize - 1; i >= 0; i--) {
             int lineNumber = i + 1;
             System.out.print(String.format("%1$" + lineNumber + "s " + leftToRightPlayer.getPiece().toString() + " ", lineNumber));
 
@@ -55,13 +61,13 @@ public class HexBoard {
         }
 
         System.out.print("    ");
-        for(int i = 0; i < size; ++i) {
+        for(int i = 0; i < boardSize; ++i) {
             System.out.print(topToBottomPlayer.getPiece().toString() + " ");
         }
         System.out.println();
 
         System.out.print("    ");
-        for(int i = 0; i < size; ++i) {
+        for(int i = 0; i < boardSize; ++i) {
             System.out.print((char)('A' + i) + " ");
         }
         System.out.println();
@@ -70,13 +76,13 @@ public class HexBoard {
     /**
      * Parses the input string and attempts to place the passed piece
      * at the parsed location if the location exists.
-     * @return If Piece was successfully placed.
+     * @return If boardgame.Piece was successfully placed.
      */
     public boolean tryPlayPosition(String positionString, Piece piece) {
         if(!matchesPattern(positionString))
             return false;
 
-        Optional<BoardPosition> position = parseInput(positionString);
+        Optional<HexPosition> position = parseInput(positionString);
 
         return position.map(pos -> {
                     setPosition(pos, piece);
@@ -86,22 +92,22 @@ public class HexBoard {
 
     public boolean doesPlayerWin(Player player) {
         if(player.equals(leftToRightPlayer)) {
-            return regionsConnected(getColumn(0), getColumn(size - 1), player.getPiece());
+            return regionsConnected(getColumn(0), getColumn(boardSize - 1), player.getPiece());
         } else if(player.equals(topToBottomPlayer)) {
-            return regionsConnected(Arrays.asList(board[0]), Arrays.asList(board[size - 1]), player.getPiece());
+            return regionsConnected(Arrays.asList(board[0]), Arrays.asList(board[boardSize - 1]), player.getPiece());
         } else {
             System.out.println("That player is not involved in this game.");
             return false;
         }
     }
 
-    public Tile getTile(BoardPosition bp) {
+    public Tile getTile(HexPosition bp) {
         return board[bp.row()][bp.column()];
     }
 
     private List<Tile> getColumn(int colNum) {
         List<Tile> column = new ArrayList<>();
-        for(int i = 0; i < size; i++) {
+        for(int i = 0; i < boardSize; i++) {
             column.add(board[i][colNum]);
         }
         return column;
@@ -116,13 +122,13 @@ public class HexBoard {
                    .collect(Collectors.toList());
 
         for(Tile t : from) {
-            if(pathBetween(t.getPosition(), to, pieceType, new ArrayList<>()))
+            if(pathBetween((HexPosition)t.getPosition(), to, pieceType, new ArrayList<>()))
                 return true;
         }
         return false;
     }
 
-    private boolean pathBetween(BoardPosition from, List<Tile> to, Piece pieceType, List<BoardPosition> searched) {
+    private boolean pathBetween(HexPosition from, List<Tile> to, Piece pieceType, List<HexPosition> searched) {
         if(!withinBounds(from)) return false;
         if(searched.contains(from)) return false;
 
@@ -130,11 +136,11 @@ public class HexBoard {
         if(fromTile.isBlank()) return false;
         if(!fromTile.getPiece().get().equals(pieceType)) return false;
 
-        List<BoardPosition> adjacencies = from.getAdjacencies();
+        List<HexPosition> adjacencies = from.getAdjacencies();
         if(to.contains(fromTile)) return true;
 
         searched.add(from);
-        for(BoardPosition bp : adjacencies) {
+        for(HexPosition bp : adjacencies) {
             if(pathBetween(bp, to, pieceType, searched))
                 return true;
         }
@@ -146,21 +152,21 @@ public class HexBoard {
      * setPosition does now bounds checking. It assumes that pos is a
      * position which fits on the board which can be checked with validPosition.
      */
-    private void setPosition(BoardPosition pos, Piece piece) {
+    private void setPosition(HexPosition pos, Piece piece) {
         board[pos.row()][pos.column()].setPiece(piece);
     }
 
     /**
-     * If a wrapped BoardPosition is returned it is guaranteed to fit on
+     * If a wrapped Hex.HexPosition is returned it is guaranteed to fit on
      * the board. Strings which parse correctly are still considered invalid
      * if they do not fit on the board.
      */
-    private Optional<BoardPosition> parseInput(String positionString) {
+    private Optional<HexPosition> parseInput(String positionString) {
         int columnIdx = positionString.toUpperCase().charAt(0) - 'A';
         int rowIdx = Integer.parseInt(positionString.substring(1, positionString.length())) - 1;
         System.out.println(rowIdx);
 
-        BoardPosition position = new BoardPosition(rowIdx, columnIdx);
+        HexPosition position = new HexPosition(rowIdx, columnIdx);
 
         if(validPosition(position))
             return Optional.of(position);
@@ -173,16 +179,16 @@ public class HexBoard {
         return regex.matcher(positionString).matches();
     }
 
-    private boolean validPosition(BoardPosition bp) {
+    private boolean validPosition(HexPosition bp) {
         return withinBounds(bp) && tileIsEmpty(bp);
     }
 
-    private boolean tileIsEmpty(BoardPosition bp) {
+    private boolean tileIsEmpty(HexPosition bp) {
         return board[bp.row()][bp.column()].isBlank();
     }
 
-    private boolean withinBounds(BoardPosition bp) {
-        return bp.column() >= 0 && bp.column() < size &&
-               bp.row() >= 0 && bp.row() < size;
+    private boolean withinBounds(HexPosition bp) {
+        return bp.column() >= 0 && bp.column() < boardSize &&
+               bp.row() >= 0 && bp.row() < boardSize;
     }
 }

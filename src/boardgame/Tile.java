@@ -1,3 +1,5 @@
+package boardgame;
+
 import java.util.Optional;
 
 /**
@@ -8,15 +10,11 @@ public class Tile {
     static String emptyTileString = ".";
 
     private Optional<Piece> piece;
-    private BoardPosition position;
+    private Position position;
 
-    public Tile(BoardPosition position) {
+    public Tile(Position position) {
         piece = Optional.empty();
         this.position = position;
-    }
-
-    public Tile(int rowIdx, int colIdx) {
-        this(new BoardPosition(rowIdx, colIdx));
     }
 
     public void setPiece(Piece piece) {
@@ -27,7 +25,7 @@ public class Tile {
         return piece;
     }
 
-    public BoardPosition getPosition() {
+    public Position getPosition() {
         return position;
     }
 

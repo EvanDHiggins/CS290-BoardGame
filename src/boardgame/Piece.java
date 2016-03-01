@@ -1,3 +1,5 @@
+package boardgame;
+
 /**
  * Created by evan on 2/14/16.
  */

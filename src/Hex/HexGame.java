@@ -1,26 +1,25 @@
+package Hex;
+
+import boardgame.Game;
+import boardgame.Player;
+import boardgame.Main;
+
 import java.util.*;
 
 /**
  * Created by evan on 2/14/16.
  */
-public class Game {
+public class HexGame extends Game {
 
-    Scanner in;
-
-    Player currentPlayer;
-
-    //Player order is maintained by cycling through a queue.
-    Queue<Player> otherPlayers;
+    //boardgame.Player order is maintained by cycling through a queue.
     HexBoard board;
 
-    public Game(Collection<Player> players) {
-        otherPlayers = new LinkedList<>(players);
-        currentPlayer = otherPlayers.remove();
-        in = new Scanner(System.in);
-
-        board = new HexBoard(new ArrayList<>(players));
+    public HexGame(List<Player> players, int boardSize) {
+        super(players);
+        board = new HexBoard(new ArrayList<>(players), boardSize);
     }
 
+    @Override
     public void run() {
         while(true) {
             board.printBoard();
@@ -38,7 +37,7 @@ public class Game {
     private void playerTurn(Player player) {
         while(true) {
             playerPrompt(player);
-            String input = in.nextLine();
+            String input = Main.input.nextLine();
             if(input.toLowerCase().equals("exit"))
                 exitGame();
             if(board.tryPlayPosition(input, player.getPiece()))
@@ -64,15 +63,5 @@ public class Game {
 
     private boolean currentPlayerHasWon() {
         return board.doesPlayerWin(currentPlayer);
-    }
-
-    /**
-     * A Queue of players keeps player order and makes
-     * cycling through players easy. An arbitrary number
-     * of players are available with this implementation.
-     */
-    private void nextPlayer() {
-        otherPlayers.add(currentPlayer);
-        currentPlayer = otherPlayers.remove();
     }
 }
