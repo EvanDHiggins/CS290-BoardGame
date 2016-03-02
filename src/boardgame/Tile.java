@@ -7,14 +7,15 @@ import java.util.Optional;
  */
 public class Tile {
 
-    static String emptyTileString = ".";
+    private char emptyTileChar = '.';
 
     private Optional<Piece> piece;
     private Position position;
 
-    public Tile(Position position) {
+    public Tile(Position position, char emptyTileChar) {
         piece = Optional.empty();
         this.position = position;
+        this.emptyTileChar = emptyTileChar;
     }
 
     public void setPiece(Piece piece) {
@@ -33,10 +34,14 @@ public class Tile {
         return this.piece.equals(Optional.of(piece));
     }
 
+    public boolean hasTileColor(char c) {
+        return this.emptyTileChar == c;
+    }
+
     @Override
     public String toString() {
         return piece.map(Piece::toString)
-                    .orElse(Tile.emptyTileString);
+                    .orElse(Character.toString(emptyTileChar));
     }
 
     @Override

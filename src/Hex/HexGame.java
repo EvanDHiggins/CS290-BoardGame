@@ -1,22 +1,20 @@
-package Hex;
+package hex;
 
-import boardgame.Game;
+import boardgame.TwoPlayerGame;
 import boardgame.Player;
 import boardgame.Main;
-
-import java.util.*;
 
 /**
  * Created by evan on 2/14/16.
  */
-public class HexGame extends Game {
+public class HexGame extends TwoPlayerGame {
 
     //boardgame.Player order is maintained by cycling through a queue.
     HexBoard board;
 
-    public HexGame(List<Player> players, int boardSize) {
-        super(players);
-        board = new HexBoard(new ArrayList<>(players), boardSize);
+    public HexGame(Player player1, Player player2, int boardSize) {
+        super(player1, player2);
+        board = new HexBoard(player1, player2, boardSize);
     }
 
     @Override

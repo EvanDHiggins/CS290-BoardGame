@@ -1,4 +1,4 @@
-package Hex;
+package hex;
 
 import boardgame.GameBoard;
 import boardgame.Piece;
@@ -12,29 +12,29 @@ import java.util.stream.Collectors;
 /**
  * Created by evan on 2/12/16.
  *
- * Hex.HexBoard encapsulates the logic of a Hex game board, the console IO, and
+ * hex.HexBoard encapsulates the logic of a hex game board, the console IO, and
  * the algorithms to determine a winner.
  */
 public class HexBoard extends GameBoard {
+
+    private static char emptyTile = '.';
 
     Tile board[][];
 
     Player leftToRightPlayer;
     Player topToBottomPlayer;
 
-    public HexBoard(List<Player> players, int boardSize) {
+    public HexBoard(Player player1, Player player2, int boardSize) {
         super(boardSize);
-        if(players.size() < 2)
-            throw new IllegalArgumentException("Not enough players for board initialization.");
 
-        leftToRightPlayer = players.get(0);
-        topToBottomPlayer = players.get(1);
+        leftToRightPlayer = player1;
+        topToBottomPlayer = player2;
 
         board = new Tile[this.boardSize][this.boardSize];
 
         for(int i = 0; i < this.boardSize; ++i) {
             for(int j = 0; j < this.boardSize; ++j) {
-                board[i][j] = new Tile(new HexPosition(i, j));
+                board[i][j] = new Tile(new HexPosition(i, j), emptyTile);
             }
         }
     }
@@ -157,7 +157,7 @@ public class HexBoard extends GameBoard {
     }
 
     /**
-     * If a wrapped Hex.HexPosition is returned it is guaranteed to fit on
+     * If a wrapped hex.HexPosition is returned it is guaranteed to fit on
      * the board. Strings which parse correctly are still considered invalid
      * if they do not fit on the board.
      */

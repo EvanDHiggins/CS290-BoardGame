@@ -1,4 +1,4 @@
-package Hex;
+package hex;
 
 import boardgame.Position;
 
@@ -15,7 +15,7 @@ public class HexPosition extends Position {
     }
 
     /**
-     * Hex adjacencies are the positions directly adjacent within a
+     * hex adjacencies are the positions directly adjacent within a
      * row/column to a given position, and the positions adjacent along
      * one of the two diagonals. In this case the forward leaning
      * diagonal is considered an adjacency while the backward leaning

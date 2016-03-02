@@ -10,5 +10,4 @@ public abstract class GameBoard {
     protected GameBoard(int size) {
         this.boardSize = size;
     }
-
 }
