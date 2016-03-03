@@ -2,6 +2,9 @@ package boardgame;
 
 /**
  * Created by Evan on 2/29/2016.
+ *
+ * Position is an immutable location on a game board. It is a dumb 2D tuple with
+ * a few extra tools defined. It contains no knowledge of the board it is used with.
  */
 public class Position {
 
