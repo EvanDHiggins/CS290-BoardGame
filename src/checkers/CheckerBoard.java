@@ -29,6 +29,10 @@ public class CheckerBoard extends GameBoard {
         }
     }
 
+    public int getSize() {
+        return boardSize;
+    }
+
     /**
      * This initializes a board with the starting pieces in their correct places.
      */
